@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  gitlab-server:
+    image: 'gitlab/gitlab-ce:latest'
+    container_name: gitlab-server
+    environment:
+      GITLAB_ROOT_EMAIL: "surangap@example.com"
+      GITLAB_ROOT_PASSWORD: "example@123"
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.example.com'
+        nginx['redirect_http_to_https'] = true
+        nginx['ssl_certificate'] = "/etc/gitlab/ssl/gitlab.example.com.crt"
+        nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/gitlab.example.com.key"
+        puma['worker_processes'] = 0 # disable cluster mode to avoid more memory usage
+    volumes:
+      - ./gitlab/config:/etc/gitlab
+      - ./gitlab/logs:/var/log/gitlab
+      - ./gitlab/data:/var/opt/gitlab
+      - ./gitlab/ssl:/etc/gitlab/ssl
+    ports:
+      - '8088:80'
+      - '8443:443'
